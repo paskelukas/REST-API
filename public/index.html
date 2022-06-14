@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Cryptocurrencies</title>
+    <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet" />
+    <link href="/styles.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <h1 class="title">Cryptocurrencies - a Crypto REST API</h1>
+    <div id="homepage">
+      <h1>Get information about your cryptocurrency</h1>
+      <div id="cryptos"></div>
+    </div>
+
+    <!-- babel which converts jsx code -->
+    <script src="https://unpkg.com/react@15/dist/react.js"></script>
+    <!-- react version 15 and react library (used to create react components)-->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- react version 15 and react dom (interact and place those components on to the dom)-->
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+    <!-- Create React Component -->
+    <script type="text/babel">
+
+    var Cryptos = React.createClass({
+
+      getInitialState: function(){
+        return({
+          cryptos: []
+        });
+      },
+      render: function(){
+        var cryptos = this.state.cryptos;
+        console.log('KRIPTO2',cryptos);
+        cryptos = cryptos.filter(item => {
+          if(!this.state.inputValue){
+            return true;
+          }
+          if(item.name.includes(this.state.inputValue)){
+            return true
+          }
+        })
+        .map(item =>{
+          return(
+            <div>
+              <span className="name">{item.name}</span>
+              <span className="rank">{item.rank}</span>
+              <span className="marketcap">{item.marketcap}</span>
+            </div>
+          )
+        })
+        console.log('KRIPTO1',cryptos);
+        return(
+          <div id="crypto-container">
+            <form id="search" onSubmit={this.handleSubmit} reset={this.resetFormFields}>
+              <label>Enter your cryptocurrency name:</label>
+              <input type="text" name={name} value={this.state.inputValue} onChange={evt => this.updateInputValue(evt)}  ref="lat" placeholder="Crypto"  />
+              <input type="submit" value="Find crypto" />
+            </form>
+           <ul>
+           {cryptos}
+            </ul>
+          </div>
+        );
+      },
+      handleSubmit: function(e){
+        e.preventDefault();
+
+        fetch('/api/cryptos').then(function(data){
+          console.log('data',data);
+          return data.json();
+        }).then(json=> {
+          this.setState({
+            cryptos: json
+          });
+        });
+      },
+      updateInputValue(evt) {
+    const val = evt.target.value;
+    // ...
+    this.setState({
+      inputValue: val
+    })
+  }
+
+    });
+
+    ReactDOM.render(<Cryptos/>, document.getElementById('cryptos'));
+
+    </script>
+
+  </body>
+</html>
